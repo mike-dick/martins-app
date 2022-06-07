@@ -1,0 +1,36 @@
+---
+output: html_document
+params:
+  li_res: NA
+  df_unfiltered : NA
+  n : NA
+  title_text : NA
+  desc : NA
+title: "`r params$title_text`"
+---
+
+```{r, echo=FALSE,warning = FALSE,message = FALSE}
+list_plots <- list ()
+
+
+for (i in 1: params$n){
+  df <- filter_dplyr (params$df_unfiltered, params$li_res[[paste0("filtered_",i)]])
+  
+  list_plots[[paste0("plot_", i)]] <- ggplot_and_plotly (df, 
+                                                      params$li_res[[paste0("gg_param_",i)]],
+                                                      params$li_res[[paste0("id_col_",i)]])
+}
+
+
+```
+
+```{r, echo=FALSE,warning = FALSE,message = FALSE}
+
+if (params$desc == "with"){
+  text_desc <- description_fun (params$li_res,params$n)
+  doc <- htmltools::tagList(div (list_plots , style = "white-space: pre-wrap"),
+                            h4 (div (text_desc),style="white-space: pre"))
+} else {doc <- htmltools::tagList(div (list_plots , style = "white-space: pre-wrap"))}
+
+doc
+```
